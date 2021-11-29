@@ -7,6 +7,12 @@ See requirements.org (plain-text) for a description of the project.
 
 Make a shared state Websockets drawing program
 
+Source
+=======
+
+https://github.com/uofa-cmput404/cmput404-slides/blob/master/examples/WebSocketsExamples/chat.py
+
+
 Prereqs
 =======
 Create a virtual environment and install the required dependencies.
