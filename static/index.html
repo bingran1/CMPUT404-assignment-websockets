@@ -44,6 +44,8 @@ debug("Test");
 
 world = {};
 
+// Some of codes in this file are from my Assignment4
+
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
@@ -138,6 +140,7 @@ function addEntity(entity, data) {
     //XXX: Send a XHTML Request that updates the entity you just modified!
     var packet = {};
     packet[entity] = data;
+    packet["type"] = "update";
     socket.send(JSON.stringify(packet));
 }
 var counter = 0;
@@ -262,13 +265,29 @@ function update() {
     drawFrame();
 }
 
+function sendWorld() {
+    var packet = {};
+    packet["world"] = world;
+    packet["type"] = "sync";
+    socket.send(JSON.stringify(packet));
+}
+
+function updateWorld(message) {
+    for (var key in message){
+        if (key != "type") {
+            world[key] = message[key];
+        }
+    }
+    drawNextFrame();
+}
+
 
 function wsSetup() {
     var url = "ws://"+host+"/subscribe";   
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
-        socket.send(JSON.stringify(world));
+        socket.send(JSON.stringify({type:"request sync"}));
         debug("connect");
     };
     socket.onerror = function(msg) {
@@ -278,17 +297,25 @@ function wsSetup() {
         try {
             debug("WebSocket Recv:" + msg.data);
             //XXX: TODO What are you going to do here? 
-            drawFrame();
-            newdata(JSON.parse(msg.data));
-            drawNextFrame();
+            message = JSON.parse(msg.data);
+            switch (message.type) {
+                case "request sync":
+                    sendWorld();
+                    break;
+                case "sync":
+                    for (var key in message["world"]){
+                        world[key] = message["world"][key];
+                    }
+                    drawNextFrame();
+                    break;
+                case "update":
+                    updateWorld(message);
+                    break;
+            }
         } catch (e) {
             alert("socket on message: " + e);
         }
     }; 
-}
-
-function newdata(data) {
-    world = data;
 }
 
 wsSetup();

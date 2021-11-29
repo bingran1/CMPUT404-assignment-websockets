@@ -28,6 +28,10 @@ app.debug = True
 
 clients = list()
 
+# some codes in this file are from the github website 
+# which provided by professor Abram Hindle in class.
+# and some codes also copyed from my Asssignment4
+# Resource links are in README.md
 def send_all(msg):
     for client in clients:
         client.put(msg)
@@ -84,7 +88,7 @@ myWorld = World()
 def set_listener( entity, data ):
     ''' do something with the update ! '''
     for client in Client:
-        client.put(flask_post_json.dumps({entity:data}))
+        client.put(json.dumps({entity:data}))
 
 myWorld.add_set_listener( set_listener )
         
